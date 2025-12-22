@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Crossword Grid Finder</title>
+      <link rel="icon" href="./images/favicon.png" type="image/x-icon">
+      <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+      <main>
+            <div class="center" id="holder">
+                  <div class="title" id="title">Crossword Grid Searcher</div>
+                  <div class="userGrid" id="baseGrid"></div>
+                  <div class="warningText" id="warningText"></div>
+                  <button class="button addGrid" onclick="addToGrids()">Add</button>
+                  <div class="allGrids" id="searchGrids"></div>
+                  <button class="button gridSubmit" onclick="searchForGrid()">Submit</button>
+                  <div class="allGrids" id="gridMatches"></div>
+            </div>
+      </main>
+      <script src="script.js"></script>
+</body>
+
+</html>

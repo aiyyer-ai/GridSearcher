@@ -1,0 +1,148 @@
+html {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #ffffff;
+}
+
+/*
+* {
+    outline: 1px dotted red;
+}
+*/
+
+.center {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+}
+
+.button {
+      border: none;
+      padding: 15px 25px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      background: #dddddd;
+      border-radius: 10px;
+}
+
+.button:hover {
+      background: #a3a3a3;
+}
+
+table {
+      border-collapse: separate;
+      border-spacing: 15px;
+      border: 1px solid #a3a3a3;
+      border-radius: 10px;
+}
+
+.gridResult {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-direction: column;
+}
+
+.tableLabel {
+      font-weight: bold;
+}
+
+.allGrids {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+}
+
+.clickable {
+      cursor: pointer;
+}
+
+.title {
+      margin-top: 40px;
+      font-size: 50px;
+}
+
+.userGrid {
+      margin-top: 20px;
+      margin-bottom: 20px;
+}
+
+.warningText {
+      height: 20px;
+      font-size: 16px;
+      color: rgb(175, 0, 0);
+      margin-bottom: 20px;
+}
+
+.gridSubmit {
+      margin-top: 20px;
+      margin-bottom: 20px;
+}
+
+.addGrid {
+      margin-bottom: 20px;
+}
+
+.imgcontainer {
+      filter: drop-shadow(-1px 6px 3px rgba(50, 50, 0, 0.5));
+      z-index: 3;
+}
+
+.imgcontainer img {
+      height: 100%;
+      width: 100%;
+}
+
+.svgGrid .cellBack {
+      position: relative;
+      z-index: 1;
+      fill: #444;
+}
+
+.svgGrid .cellFill {
+      position: relative;
+      z-index: 2;
+}
+
+.svgGrid .gridLine {
+      stroke: #444;
+      stroke-width: 1;
+      shape-rendering: crispedges;
+}
+
+.svgGrid rect.none {
+      fill: #888888;
+}
+
+.svgGrid rect.default {
+      fill: #fff;
+}
+
+.svgGrid rect.highlight {
+      fill: #58a6c5;
+}
+
+.svgGrid rect.block {
+      fill: #000;
+}
+
+.svgGrid .gridBorder {
+      fill: none;
+      stroke: #000;
+      stroke-width: 2;
+}
+
+* {
+      box-sizing: border-box;
+      margin: 0;
+}
