@@ -40,9 +40,10 @@ html {
 
 table {
       border-collapse: separate;
-      border-spacing: 15px;
+      border-spacing: 15px 10px;
       border: 1px solid #a3a3a3;
       border-radius: 10px;
+      margin-bottom: 10px;
 }
 
 .gridResult {

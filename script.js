@@ -174,18 +174,86 @@ function createGridTable({ gridHeight, gridWidth, gridString}) {
       const sizeValue = sizeInfo.insertCell();
       sizeValue.appendChild(document.createTextNode(`${gridWidth} x ${gridHeight}`));
 
+      let allWords = countWords({ gridHeight: gridHeight, gridWidth: gridWidth, gridString: gridString})
+
       const wordInfo = tbody.insertRow();
       const wordLabel = wordInfo.insertCell();
       wordLabel.appendChild(document.createTextNode(`Total Words`));
       wordLabel.classList.add(`tableLabel`);
       const wordValue = wordInfo.insertCell();
-      wordValue.appendChild(document.createTextNode(countWords({ gridHeight: gridHeight, gridWidth: gridWidth, gridString: gridString})));
+      wordValue.appendChild(document.createTextNode(allWords.length));
+
+      const rotationInfo = tbody.insertRow();
+      const rotationLabel = rotationInfo.insertCell();
+      rotationLabel.appendChild(document.createTextNode(`Symmetry`));
+      rotationLabel.classList.add(`tableLabel`);
+      const rotationValue = rotationInfo.insertCell();
+      rotationValue.appendChild(document.createTextNode(findSymmetry({ gridHeight: gridHeight, gridWidth: gridWidth, gridString: gridString})));
+
+
+      let wordSum = allWords.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+      let wordAverage = wordSum / allWords.length;
+
+      const wordLengthInfo = tbody.insertRow();
+      const wordLengthLabel = wordLengthInfo.insertCell();
+      wordLengthLabel.appendChild(document.createTextNode(`Avg. Length`));
+      wordLengthLabel.classList.add(`tableLabel`);
+      const wordLengthValue = wordLengthInfo.insertCell();
+      wordLengthValue.appendChild(document.createTextNode(wordAverage.toFixed(2)));
+
+      const word3CountInfo = tbody.insertRow();
+      const word3CountLabel = word3CountInfo.insertCell();
+      word3CountLabel.appendChild(document.createTextNode(`3 Letter Words`));
+      word3CountLabel.classList.add(`tableLabel`);
+      const word3CountValue = word3CountInfo.insertCell();
+      word3CountValue.appendChild(document.createTextNode(allWords.filter(item => item == 3).length));
 
       return table;
 }
 
+function findSymmetry({ gridHeight, gridWidth, gridString}) {
+      let hasRotational = true;
+      for (let i = 0; i < gridString.length / 2; i++) {
+            if (gridString[i] !== gridString[gridString.length - 1 - i]) {
+                  hasRotational = false;
+                  break;
+            }
+      }
+      if (hasRotational) return "Rotational";
+
+      let hasLeftRight = true;
+      for (let row = 0; row < gridHeight; row++) {
+            for (let col = 0; col < gridWidth / 2; col++) {
+                  const leftIndex = row * gridWidth + col;
+                  const rightIndex = row * gridWidth + (gridWidth - 1 - col);
+                  if (gridString[leftIndex] !== gridString[rightIndex]) {
+                        hasLeftRight = false;
+                        break;
+                  }
+            }
+            if (!hasLeftRight) break;
+      }
+      if (hasLeftRight) return "Left/Right";
+
+      let hasDiagonal = true;
+      for (let row = 0; row < gridHeight; row++) {
+            for (let col = 0; col < gridWidth; col++) {
+                  const index1 = row * gridWidth + col;
+                  const index2 = col * gridWidth + row;
+                  if (gridString[index1] !== gridString[index2]) {
+                        hasDiagonal = false;
+                        break;
+                  }
+            }
+            if (!hasDiagonal) break;
+      }
+      if (hasDiagonal) return "Diagonal";
+
+      return "None";
+}
+
 function countWords({ gridHeight, gridWidth, gridString}) {
-      let wordCount = 0;
+      let allWords = [];
       
       for (let row = 0; row < gridHeight; row++) {
             let wordLength = 0;
@@ -195,13 +263,13 @@ function countWords({ gridHeight, gridWidth, gridString}) {
                         wordLength++;
                   } else {
                         if (wordLength > 2) {
-                              wordCount++;
+                              allWords.push(wordLength);
                         }
                         wordLength = 0;
                   }
             }
             if (wordLength > 2) {
-                  wordCount++;
+                  allWords.push(wordLength);
             }
       }
       
@@ -213,17 +281,17 @@ function countWords({ gridHeight, gridWidth, gridString}) {
                         wordLength++;
                   } else {
                         if (wordLength > 2) {
-                              wordCount++;
+                              allWords.push(wordLength);
                         }
                         wordLength = 0;
                   }
             }
             if (wordLength > 2) {
-                  wordCount++;
+                  allWords.push(wordLength);
             }
       }
       
-      return wordCount.toString();
+      return allWords;
 }
 
 function patternFoundInGrid(userString, gridString, gridWidth, gridHeight) {
@@ -253,8 +321,8 @@ function patternFoundInGrid(userString, gridString, gridWidth, gridHeight) {
       const patternHeight = maxRow - minRow + 1;
       const patternWidth = maxCol - minCol + 1;
 
-      for (let startRow = 0; startRow <= gridHeight - patternHeight; startRow++) {
-            for (let startCol = 0; startCol <= gridWidth - patternWidth; startCol++) {
+      for (let startRow = -patternHeight + 1; startRow < gridHeight; startRow++) {
+            for (let startCol = -patternWidth + 1; startCol < gridWidth; startCol++) {
                   let isMatch = true;
 
                   for (let patRow = 0; patRow < patternHeight && isMatch; patRow++) {
@@ -262,10 +330,19 @@ function patternFoundInGrid(userString, gridString, gridWidth, gridHeight) {
                               const userRow = minRow + patRow;
                               const userCol = minCol + patCol;
                               const userIndex = userRow * userFullWidth + userCol;
-                              const gridIndex = (startRow + patRow) * gridWidth + (startCol + patCol);
+                              const gridRow = startRow + patRow;
+                              const gridCol = startCol + patCol;
 
                               const userChar = userString[userIndex];
-                              const gridChar = gridString[gridIndex];
+                              let gridChar;
+
+                              // If position is outside grid, treat as '.' (block)
+                              if (gridRow < 0 || gridRow >= gridHeight || gridCol < 0 || gridCol >= gridWidth) {
+                                    gridChar = '.';
+                              } else {
+                                    const gridIndex = gridRow * gridWidth + gridCol;
+                                    gridChar = gridString[gridIndex];
+                              }
 
                               if (userChar !== '-' && userChar !== gridChar) {
                                     isMatch = false;
@@ -279,9 +356,15 @@ function patternFoundInGrid(userString, gridString, gridWidth, gridHeight) {
                                     const userRow = minRow + patRow;
                                     const userCol = minCol + patCol;
                                     const userIndex = userRow * userFullWidth + userCol;
+                                    const gridRow = startRow + patRow;
+                                    const gridCol = startCol + patCol;
+
                                     if (userString[userIndex] !== '-') {
-                                          const gridIndex = (startRow + patRow) * gridWidth + (startCol + patCol);
-                                          matchingCharPositions.push(gridIndex);
+                                          // Only add to matching positions if it's actually within the grid
+                                          if (gridRow >= 0 && gridRow < gridHeight && gridCol >= 0 && gridCol < gridWidth) {
+                                                const gridIndex = gridRow * gridWidth + gridCol;
+                                                matchingCharPositions.push(gridIndex);
+                                          }
                                     }
                               }
                         }
