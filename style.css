@@ -21,7 +21,7 @@ html {
       width: 100%;
 }
 
-.button {
+/* .button {
       border: none;
       padding: 15px 25px;
       text-align: center;
@@ -36,6 +36,29 @@ html {
 
 .button:hover {
       background: #a3a3a3;
+} */
+
+/* CSS */
+.button {
+  font-size: 18px;
+  letter-spacing: 2px;
+  background-color: #dddddd;
+  text-decoration: none;
+  color: #000;
+  cursor: pointer;
+  border: 2px solid;
+  padding: 0.5em 0.75em;
+  box-shadow: 0px 0px 0px 0px, 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px, 4px 4px 0px 0px;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button:active {
+  box-shadow: 0px 0px 0px 0px;
+  top: 5px;
+  left: 5px;
 }
 
 table {
@@ -51,6 +74,21 @@ table {
       justify-content: space-between;
       align-items: center;
       flex-direction: column;
+}
+
+.buttonDiv {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-direction: row;
+}
+
+.edit,
+.delete {
+      margin: 10px;
+      box-shadow: 0px 0px 0px 0px, 0px 0px 0px 0px, 0px 0px 0px 0px, 1px 1px 0px 0px, 2px 2px 0px 0px;
+      padding: 0.25em 0.5em;
+      font-size: 16px;
 }
 
 .tableLabel {

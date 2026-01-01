@@ -7,8 +7,31 @@ window.onload = async () => {
       // createSVGGrid({ parentElement: centerDiv, gridHeight: 15, gridWidth: 15, gridString: gridString });
 }
 
-function deleteSVG() {
-      this.remove();
+function deleteGrid() {
+      this.parentElement.parentElement.remove();
+}
+
+function editGrid() {
+      let svg = document.getElementById(`userGridSVG`);
+      this.parentElement.parentElement.querySelectorAll(".cellFill").forEach(cell => {
+            let originalCell = Array.from(svg.querySelectorAll(".cellFill")).filter(originalCell => {
+                  return originalCell.id == cell.id;
+            })[0];
+            if(cell.parentElement.style.visibility == `hidden`) {
+                  originalCell.parentElement.style.visibility = `hidden`;
+                  originalCell.classList.remove('none', 'block', 'default');
+            } else {
+                  originalCell.parentElement.style.visibility = `visible`;
+                  originalCell.classList.remove('none', 'block', 'default');
+                  Array.from(cell.classList).forEach(className => {
+                        if(!['none', 'block', 'default'].includes(className)) {
+                              return;
+                        }
+                        originalCell.classList.add(className);
+                  });
+            }
+      });
+      this.parentElement.parentElement.remove();
 }
 
 function addToGrids() {
@@ -23,6 +46,10 @@ function addToGrids() {
       });
       if(importantSquares > 4) {
             text.innerHTML = ``;
+            let resultContainer = document.createElement(`div`);
+            resultContainer.classList.add(`gridResult`);
+            resultContainer.style.flexWrap = `wrap`;
+            gridDiv.appendChild(resultContainer);
             let newSVG = svg.cloneNode(true);
             newSVG.id = Array.from(gridDiv.children).length;
             newSVG.setAttribute('width', 262 + 'px');
@@ -30,8 +57,8 @@ function addToGrids() {
             newSVG.querySelectorAll(".cellFill").forEach(cell => {
                   cell.onclick = null;
             });
-            newSVG.classList.add(`clickable`);
-            newSVG.onclick = deleteSVG;
+            // newSVG.classList.add(`clickable`);
+            // newSVG.onclick = deleteSVG;
 
             let centerID = Math.round(svg.gridHeight * svg.gridWidth / 2) - 1;
             let keptCells = getNeighborIDs(centerID, svg.gridHeight, svg.gridWidth);
@@ -55,7 +82,20 @@ function addToGrids() {
                         cell.classList.remove('none');
                   }
             });
-            gridDiv.appendChild(newSVG);
+            resultContainer.appendChild(newSVG);
+            let buttonDiv = document.createElement(`div`);
+            buttonDiv.classList.add(`buttonList`);
+            let editButton = document.createElement(`button`);
+            editButton.classList.add(`button`, `edit`);
+            editButton.innerHTML = `Edit`;
+            editButton.onclick = editGrid;
+            buttonDiv.appendChild(editButton);
+            let deleteButton = document.createElement(`button`);
+            deleteButton.classList.add(`button`, `delete`);
+            deleteButton.innerHTML = `Delete`;
+            deleteButton.onclick = deleteGrid;
+            buttonDiv.appendChild(deleteButton);
+            resultContainer.appendChild(buttonDiv);
       } else {
             text.innerHTML = `Not enough squares selected!`;
       }
