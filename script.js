@@ -17,14 +17,14 @@ function editGrid() {
             let originalCell = Array.from(svg.querySelectorAll(".cellFill")).filter(originalCell => {
                   return originalCell.id == cell.id;
             })[0];
-            if(cell.parentElement.style.visibility == `hidden`) {
+            if (cell.parentElement.style.visibility == `hidden`) {
                   originalCell.parentElement.style.visibility = `hidden`;
                   originalCell.classList.remove('none', 'block', 'default');
             } else {
                   originalCell.parentElement.style.visibility = `visible`;
                   originalCell.classList.remove('none', 'block', 'default');
                   Array.from(cell.classList).forEach(className => {
-                        if(!['none', 'block', 'default'].includes(className)) {
+                        if (!['none', 'block', 'default'].includes(className)) {
                               return;
                         }
                         originalCell.classList.add(className);
@@ -40,11 +40,11 @@ function addToGrids() {
       let text = document.getElementById(`warningText`);
       let importantSquares = 0;
       svg.querySelectorAll(".cellFill").forEach(cell => {
-            if(Array.from(cell.classList).includes(`block`) || Array.from(cell.classList).includes(`default`)) {
+            if (Array.from(cell.classList).includes(`block`) || Array.from(cell.classList).includes(`default`)) {
                   importantSquares++;
             }
       });
-      if(importantSquares > 4) {
+      if (importantSquares > 4) {
             text.innerHTML = ``;
             let resultContainer = document.createElement(`div`);
             resultContainer.classList.add(`gridResult`);
@@ -85,17 +85,26 @@ function addToGrids() {
             resultContainer.appendChild(newSVG);
             let buttonDiv = document.createElement(`div`);
             buttonDiv.classList.add(`buttonList`);
+
             let editButton = document.createElement(`button`);
             editButton.classList.add(`button`, `edit`);
             editButton.innerHTML = `Edit`;
             editButton.onclick = editGrid;
             buttonDiv.appendChild(editButton);
+
+            let inputID = document.createElement("input");
+            inputID.type = "text";
+            inputID.placeholder = `ID`;
+            inputID.classList.add(`inputID`);
+            buttonDiv.appendChild(inputID);
+
             let deleteButton = document.createElement(`button`);
             deleteButton.classList.add(`button`, `delete`);
             deleteButton.innerHTML = `Delete`;
             deleteButton.onclick = deleteGrid;
             buttonDiv.appendChild(deleteButton);
             resultContainer.appendChild(buttonDiv);
+
       } else {
             text.innerHTML = `Not enough squares selected!`;
       }
@@ -138,7 +147,7 @@ function downloadCrossFire() {
 async function searchForGrid() {
       let userStrings = getGridStrings();
       let text = document.getElementById(`warningText`);
-      if(!userStrings.length) {
+      if (!userStrings.length) {
             text.innerHTML = `No grids to search for!`;
             return;
       } else {
@@ -154,13 +163,19 @@ async function searchForGrid() {
             let gridHeight = parseInt(grid[1]);
             let allMatches = [];
             let potentialGrid = true;
-            for (string of userStrings) {
-                  let matchPositions = patternFoundInGrid(string, gridString, gridWidth, gridHeight);
-                  if (matchPositions.length == 0) {
+            for (group of userStrings) {
+                  let foundInGroup = false;
+                  for (string of group) {
+                        let matchPositions = patternFoundInGrid(string, gridString, gridWidth, gridHeight);
+                        if (matchPositions.length != 0) {
+                              foundInGroup = true;
+                              allMatches.push(matchPositions);
+                        }
+                  }
+                  if (!foundInGroup) {
                         potentialGrid = false;
                         break;
                   }
-                  allMatches.push(matchPositions);
             }
             if (!potentialGrid) {
                   continue;
@@ -197,12 +212,12 @@ async function searchForGrid() {
                   newSVG.onclick = downloadCrossFire;
             }
       }
-      if(totalMatches == 0) {
+      if (totalMatches == 0) {
             text.innerHTML = `No grids found!`;
       }
 }
 
-function createGridTable({ gridHeight, gridWidth, gridString}) {
+function createGridTable({ gridHeight, gridWidth, gridString }) {
       const table = document.createElement('table');
       const tbody = document.createElement('tbody');
       table.appendChild(tbody);
@@ -214,7 +229,7 @@ function createGridTable({ gridHeight, gridWidth, gridString}) {
       const sizeValue = sizeInfo.insertCell();
       sizeValue.appendChild(document.createTextNode(`${gridWidth} x ${gridHeight}`));
 
-      let allWords = countWords({ gridHeight: gridHeight, gridWidth: gridWidth, gridString: gridString})
+      let allWords = countWords({ gridHeight: gridHeight, gridWidth: gridWidth, gridString: gridString })
 
       const wordInfo = tbody.insertRow();
       const wordLabel = wordInfo.insertCell();
@@ -228,7 +243,7 @@ function createGridTable({ gridHeight, gridWidth, gridString}) {
       rotationLabel.appendChild(document.createTextNode(`Symmetry`));
       rotationLabel.classList.add(`tableLabel`);
       const rotationValue = rotationInfo.insertCell();
-      rotationValue.appendChild(document.createTextNode(findSymmetry({ gridHeight: gridHeight, gridWidth: gridWidth, gridString: gridString})));
+      rotationValue.appendChild(document.createTextNode(findSymmetry({ gridHeight: gridHeight, gridWidth: gridWidth, gridString: gridString })));
 
 
       let wordSum = allWords.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
@@ -251,7 +266,7 @@ function createGridTable({ gridHeight, gridWidth, gridString}) {
       return table;
 }
 
-function findSymmetry({ gridHeight, gridWidth, gridString}) {
+function findSymmetry({ gridHeight, gridWidth, gridString }) {
       let hasRotational = true;
       for (let i = 0; i < gridString.length / 2; i++) {
             if (gridString[i] !== gridString[gridString.length - 1 - i]) {
@@ -292,9 +307,9 @@ function findSymmetry({ gridHeight, gridWidth, gridString}) {
       return "None";
 }
 
-function countWords({ gridHeight, gridWidth, gridString}) {
+function countWords({ gridHeight, gridWidth, gridString }) {
       let allWords = [];
-      
+
       for (let row = 0; row < gridHeight; row++) {
             let wordLength = 0;
             for (let col = 0; col < gridWidth; col++) {
@@ -312,7 +327,7 @@ function countWords({ gridHeight, gridWidth, gridString}) {
                   allWords.push(wordLength);
             }
       }
-      
+
       for (let col = 0; col < gridWidth; col++) {
             let wordLength = 0;
             for (let row = 0; row < gridHeight; row++) {
@@ -330,7 +345,7 @@ function countWords({ gridHeight, gridWidth, gridString}) {
                   allWords.push(wordLength);
             }
       }
-      
+
       return allWords;
 }
 
@@ -376,7 +391,6 @@ function patternFoundInGrid(userString, gridString, gridWidth, gridHeight) {
                               const userChar = userString[userIndex];
                               let gridChar;
 
-                              // If position is outside grid, treat as '.' (block)
                               if (gridRow < 0 || gridRow >= gridHeight || gridCol < 0 || gridCol >= gridWidth) {
                                     gridChar = '.';
                               } else {
@@ -400,7 +414,6 @@ function patternFoundInGrid(userString, gridString, gridWidth, gridHeight) {
                                     const gridCol = startCol + patCol;
 
                                     if (userString[userIndex] !== '-') {
-                                          // Only add to matching positions if it's actually within the grid
                                           if (gridRow >= 0 && gridRow < gridHeight && gridCol >= 0 && gridCol < gridWidth) {
                                                 const gridIndex = gridRow * gridWidth + gridCol;
                                                 matchingCharPositions.push(gridIndex);
@@ -418,6 +431,7 @@ function patternFoundInGrid(userString, gridString, gridWidth, gridHeight) {
 function getGridStrings() {
       let svg = document.getElementById(`userGridSVG`);
       let gridDiv = document.getElementById(`searchGrids`);
+      let gridStringDictionary = {};
       let gridStringArray = [];
       for (grid of Array.from(gridDiv.children)) {
             let gridString = '-'.repeat(svg.gridHeight * svg.gridWidth);
@@ -431,8 +445,18 @@ function getGridStrings() {
                   gridArray[cell.id] = `.`;
                   gridString = gridArray.join('');
             });
-            gridStringArray.push(gridString);
+            // gridStringArray.push(gridString);
+            let inputID = Array.from(grid.querySelectorAll(".inputID"))[0].value;
+            if(inputID) {
+                  if(!gridStringDictionary[inputID]) {
+                        gridStringDictionary[inputID] = [];
+                  }
+                  gridStringDictionary[inputID].push(gridString);
+            } else {
+                  gridStringArray.push([gridString]);
+            }
       }
+      gridStringArray = gridStringArray.concat(Object.values(gridStringDictionary));
       return gridStringArray;
 }
 
@@ -606,17 +630,17 @@ function createSVGGrid({ parentElement, gridHeight, gridWidth, gridString = "", 
       if (!isMain) {
             const gridLine = document.createElementNS(SVG_NS, "path");
             let pathData = "";
-            
+
             for (let i = 1; i < gridHeight; i++) {
                   const y = borderSize + 0.5 + cellSize * i;
                   pathData += `M${borderSize},${y} l${width},0 `;
             }
-            
+
             for (let i = 1; i < gridWidth; i++) {
                   const x = borderSize + 0.5 + cellSize * i;
                   pathData += `M${x},${borderSize} l0,${height} `;
             }
-            
+
             gridLine.classList.add('gridLine');
             gridLine.setAttribute("d", pathData);
             svg.appendChild(gridLine);
@@ -679,8 +703,8 @@ function componentToHex(c) {
       return hex.length == 1 ? "0" + hex : hex;
 }
 
-function rgbToHex({r, g, b}) {
-  // Ensure the input values are integers before conversion
+function rgbToHex({ r, g, b }) {
+      // Ensure the input values are integers before conversion
       r = Math.round(r);
       g = Math.round(g);
       b = Math.round(b);
