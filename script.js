@@ -1,4 +1,8 @@
 window.onload = async () => {
+      let submitButton = document.getElementById(`submitButton`);
+      let submitHeight = submitButton.getBoundingClientRect().height;
+      let matchArea = document.getElementById(`matchInfo`);
+      matchArea.style.height = submitHeight + "px";
       let baseDiv = document.getElementById(`baseGrid`);
       let baseGrid = createClickableSVGGrid(baseDiv, 15, 15);
 
@@ -7,8 +11,26 @@ window.onload = async () => {
       // createSVGGrid({ parentElement: centerDiv, gridHeight: 15, gridWidth: 15, gridString: gridString });
 }
 
+function adjustMatchOptions() {
+      let matchSelect = document.getElementById("matchAmount");
+      let gridDiv = document.getElementById(`searchGrids`);
+      let currentCount = Array.from(gridDiv.children).length;
+
+      matchSelect.options.length = 0;
+      matchSelect.length = 0;
+
+      const newOption = new Option(`All`, 0);
+      matchSelect.add(newOption);
+
+      for (i = (currentCount - 1); i > 0; i--) {
+            const newOption = new Option(i, i);
+            matchSelect.add(newOption);
+      }
+}
+
 function deleteGrid() {
       this.parentElement.parentElement.remove();
+      adjustMatchOptions();
 }
 
 function editGrid() {
@@ -32,6 +54,7 @@ function editGrid() {
             }
       });
       this.parentElement.parentElement.remove();
+      adjustMatchOptions();
 }
 
 function addToGrids() {
@@ -95,7 +118,7 @@ function addToGrids() {
             let inputID = document.createElement("input");
             inputID.type = "text";
             inputID.placeholder = `ID`;
-            inputID.classList.add(`inputID`);
+            inputID.classList.add(`inputID`, 'inputBox');
             buttonDiv.appendChild(inputID);
 
             let deleteButton = document.createElement(`button`);
@@ -104,6 +127,8 @@ function addToGrids() {
             deleteButton.onclick = deleteGrid;
             buttonDiv.appendChild(deleteButton);
             resultContainer.appendChild(buttonDiv);
+
+            adjustMatchOptions();
 
       } else {
             text.innerHTML = `Not enough squares selected!`;
@@ -153,34 +178,61 @@ async function searchForGrid() {
       } else {
             text.innerHTML = ``;
       }
+      let matchSelect = document.getElementById("matchAmount");
+      let neededMatches = matchSelect.value;
+      if(neededMatches > userStrings.length) {
+            neededMatches = 0;
+      }
       let allGrids = await fetchCSV('./grids.csv');
       let allGridDiv = document.getElementById(`gridMatches`);
       allGridDiv.innerHTML = ``;
       let totalMatches = 0;
+      let matchColors = [];
+      let hue = 0;
+      let newColor = 0;
+      for (group of userStrings) {
+            [hue, newColor] = nextColor(hue);
+            matchColors.push(rgbToHex(newColor));
+      }
       for (grid of allGrids) {
             let gridString = grid[2];
             let gridWidth = parseInt(grid[0]);
             let gridHeight = parseInt(grid[1]);
-            let allMatches = [];
+            let allMatches = {};
             let potentialGrid = true;
+            let failedMatches = 0;
+            let totalAttempts = userStrings.length;
             for (group of userStrings) {
                   let foundInGroup = false;
+                  let groupIndex = userStrings.indexOf(group);
                   for (string of group) {
                         let matchPositions = patternFoundInGrid(string, gridString, gridWidth, gridHeight);
                         if (matchPositions.length != 0) {
                               foundInGroup = true;
-                              allMatches.push(matchPositions);
+                              if(!allMatches[matchColors[groupIndex]]) {
+                                    allMatches[matchColors[groupIndex]] = [];
+                              }
+                              allMatches[matchColors[groupIndex]].push(matchPositions);
                         }
                   }
                   if (!foundInGroup) {
-                        potentialGrid = false;
-                        break;
+                        if(!neededMatches) {
+                              potentialGrid = false;
+                              break;
+                        } else {
+                              failedMatches++;
+                              let attemptsRemaining = totalAttempts - failedMatches;
+                              if(attemptsRemaining < neededMatches) {
+                                    potentialGrid = false;
+                                    break;
+                              }
+                        }
                   }
             }
             if (!potentialGrid) {
                   continue;
             }
-            if (allMatches.length > 0) {
+            if (Object.keys(allMatches).length > 0) {
                   totalMatches++;
                   let resultContainer = document.createElement(`div`);
                   resultContainer.classList.add(`gridResult`);
@@ -188,23 +240,17 @@ async function searchForGrid() {
                   let newSVG = createSVGGrid({ parentElement: resultContainer, gridHeight: grid[1], gridWidth: grid[0], gridString: gridString });
                   let dataTable = createGridTable({ gridHeight: grid[1], gridWidth: grid[0], gridString: gridString });
                   resultContainer.appendChild(dataTable);
-                  let matchColors = [];
-                  let hue = 0;
-                  let newColor = 0;
-                  for (matchPositions of allMatches) {
-                        [hue, newColor] = nextColor(hue);
-                        matchColors.push(rgbToHex(newColor));
-                  }
                   newSVG.gridWidth = grid[0];
                   newSVG.gridHeight = grid[1];
                   newSVG.querySelectorAll(".cellFill").forEach(cell => {
-                        for (matchPositions of allMatches) {
+                        for (const [color, matchPositionsArray] of Object.entries(allMatches)) {
+                              let matchPositions = matchPositionsArray[0];
                               if (matchPositions.includes(Number(cell.id)) && !Array.from(cell.classList).includes(`block`)) {
                                     cell.classList.remove('block');
                                     cell.classList.remove('default');
                                     cell.classList.remove('none');
                                     // cell.classList.add('highlight');
-                                    cell.setAttribute('fill', matchColors[allMatches.indexOf(matchPositions)]);
+                                    cell.setAttribute('fill', color);
                               }
                         }
                   });
@@ -447,8 +493,8 @@ function getGridStrings() {
             });
             // gridStringArray.push(gridString);
             let inputID = Array.from(grid.querySelectorAll(".inputID"))[0].value;
-            if(inputID) {
-                  if(!gridStringDictionary[inputID]) {
+            if (inputID) {
+                  if (!gridStringDictionary[inputID]) {
                         gridStringDictionary[inputID] = [];
                   }
                   gridStringDictionary[inputID].push(gridString);

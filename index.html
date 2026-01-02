@@ -12,13 +12,21 @@
 
 <body>
       <main>
-            <div class="center" id="holder">
+            <div class="center centerFlex" id="holder">
                   <div class="title" id="title">Crossword Grid Searcher</div>
                   <div class="userGrid" id="baseGrid"></div>
                   <div class="warningText" id="warningText"></div>
                   <button class="button addGrid" onclick="addToGrids()">Add</button>
                   <div class="allGrids" id="searchGrids"></div>
-                  <button class="button gridSubmit" onclick="searchForGrid()">Submit</button>
+                  <div class="buttonDiv" id="submitHolder">
+                        <div class="centerFlex inputHolder" id="matchInfo">
+                              <span class="matchText">Match</span>
+                              <select id="matchAmount" name="matchAmount" class="inputBox">
+                                    <option value="volvo">All</option>
+                              </select>
+                        </div>
+                        <button class="button gridSubmit" id="submitButton" onclick="searchForGrid()">Submit</button>
+                  </div>
                   <div class="allGrids" id="gridMatches"></div>
             </div>
       </main>

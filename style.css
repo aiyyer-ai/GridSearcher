@@ -13,12 +13,15 @@ html {
       position: absolute;
       top: 0;
       left: 0;
+      height: 100%;
+      width: 100%;
+}
+
+.centerFlex {
       display: flex;
       justify-content: flex-start;
       align-items: center;
       flex-direction: column;
-      height: 100%;
-      width: 100%;
 }
 
 /* .button {
@@ -61,6 +64,13 @@ html {
 }
 
 .inputID {
+      cursor: text;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+}
+
+.inputBox {
       margin: 10px;
       font-size: 18px;
       letter-spacing: 2px;
@@ -68,16 +78,25 @@ html {
       text-decoration: none;
       text-align: center;
       color: #000;
-      cursor: text;
       border: 2px solid;
-      padding: 0.5em 0.75em;
       box-shadow: 0px 0px 0px 0px, 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px, 4px 4px 0px 0px;
       position: relative;
       user-select: none;
       -webkit-user-select: none;
-      width: 40px;
-      height: 40px;
-      padding: 0;
+}
+
+#matchAmount {
+      margin-top: 0px;
+}
+
+.inputHolder {
+      margin: 10px;
+}
+
+.matchText {
+      font-size: 16px;
+      letter-spacing: 1px;
+      margin: 0px;
 }
 
 table {
